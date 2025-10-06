@@ -86,11 +86,8 @@ def create_products():
 
     message = product.serialize()
 
-    #
-    # Uncomment this line of code once you implement READ A PRODUCT
-    #
-    # location_url = url_for("get_products", product_id=product.id, _external=True)
-    location_url = "/"  # delete once READ is implemented
+
+    location_url = url_for("get_products", product_id=product.id, _external=True)
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
 
@@ -129,12 +126,14 @@ def list_products():
     return results, status.HTTP_200_OK
 
 ######################################################################
-# R E A D   A   P R O D U C T
+# READ A PRODUCT
 ######################################################################
-
-#
-# PLACE YOUR CODE HERE TO READ A PRODUCT
-#
+@app.route('/products/<int:product_id>', methods=['GET'])
+def get_products(product_id):
+    product = Product.find(product_id)
+    if not product:
+        abort(status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found.")
+    return product.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # UPDATE AN EXISTING PRODUCT
@@ -176,9 +175,3 @@ def delete_products(product_id):
 
     return "", status.HTTP_204_NO_CONTENT
 
-@app.route('/products/<int:product_id>', methods=['GET'])
-def get_product(product_id):
-    product = Product.find(product_id)
-    if not product:
-        abort(status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found.")
-    return product.serialize(), status.HTTP_200_OK
